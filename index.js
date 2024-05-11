@@ -33,6 +33,7 @@ async function run() {
 
     const FeatureCollection = client.db('OnlineGroupStudyAssignment').collection('featureCard');
     const CreateAssignment = client.db('OnlineGroupStudyAssignment').collection('assignment');
+    const SubmitAssignment = client.db('OnlineGroupStudyAssignment').collection('submitassignment');
 
     app.get('/feature',async(req,res) => {
         const cursor = FeatureCollection.find();
@@ -69,6 +70,11 @@ async function run() {
     app.post('/assignment',async(req,res) => {
       const user = req.body;
       const result = await CreateAssignment.insertOne(user);
+      res.send(result);
+    })
+    app.post('/submitAssignment',async(req,res) => {
+      const user = req.body;
+      const result = await SubmitAssignment.insertOne(user);
       res.send(result);
     })
 
