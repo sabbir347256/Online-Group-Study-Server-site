@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config() 
 const express = require('express');
 const cors = require('cors');
@@ -8,7 +8,9 @@ const port = process.env.PORT || 5000;
 //middleware
 //online-group-study
 //5kGZE5JJuRrbHeQ5
-app.use(cors());
+app.use(cors({
+  origin : ['http://localhost:5173']
+}));
 app.use(express.json());
 
 
@@ -30,16 +32,75 @@ async function run() {
     // await client.connect();
 
     const FeatureCollection = client.db('OnlineGroupStudyAssignment').collection('featureCard');
+    const CreateAssignment = client.db('OnlineGroupStudyAssignment').collection('assignment');
 
     app.get('/feature',async(req,res) => {
         const cursor = FeatureCollection.find();
         const result = await cursor.toArray();
         res.send(result);
     })
+    app.get('/assignment',async(req,res) => {
+        const cursor = CreateAssignment.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+    app.get('/assignmentDetails',async(req,res) => {
+        const cursor = CreateAssignment.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
+    app.get('/updateAssignment/:id', async(req,res) =>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await CreateAssignment.findOne(query);
+      res.send(result);
+  })
+
+    app.get('/myassignment/:email', async(req,res) =>{
+      const email = req.body.email;
+      const query = {email :  (email)};
+      const cursor = CreateAssignment.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+  })
+
+
+    app.post('/assignment',async(req,res) => {
+      const user = req.body;
+      const result = await CreateAssignment.insertOne(user);
+      res.send(result);
+    })
+
+    app.put('/updateAssignment/:id', async (req,res) => {
+      const id = req.params.id;
+      const user = req.body;
+      // console.log(id,user);
+      const filter = {_id : new ObjectId(id)};
+      const options = {upsert : true};
+      const updatedSpot = {
+          $set : {
+            imageurl: user.imageurl,
+              title : user.title,
+              mark : user.mark,
+              inputField : user.inputField,
+          }
+      };
+      const result = await CreateAssignment.updateOne(filter,updatedSpot,options);
+      res.send(result);
+  })
+
+    app.delete('/deleteassignment/:id', async(req,res) => {
+      const id = req.params.id;
+      // console.log('delte',id);
+      const query = {_id : new ObjectId(id)};
+      const result = await CreateAssignment.deleteOne(query);
+      res.send(result);
+  })
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
