@@ -45,6 +45,18 @@ async function run() {
         const result = await cursor.toArray();
         res.send(result);
     })
+    app.get('/submitAssignment',async(req,res) => {
+        const cursor = SubmitAssignment.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+    app.get('/submitAssignment/:id', async(req,res) =>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      // const cursor = SubmitAssignment.find(query);
+      const result = await SubmitAssignment.findOne(query);
+      res.send(result);
+  })
     app.get('/assignmentDetails',async(req,res) => {
         const cursor = CreateAssignment.find();
         const result = await cursor.toArray();
@@ -58,13 +70,13 @@ async function run() {
       res.send(result);
   })
 
-    app.get('/myassignment/:email', async(req,res) =>{
-      const email = req.body.email;
-      const query = {email :  (email)};
-      const cursor = CreateAssignment.find(query);
-      const result = await cursor.toArray();
-      res.send(result);
-  })
+//   app.get('/myassignment/:email', async(req,res) =>{
+//     const email = req.body.email;
+//     const query = {email :  (email)};
+//     const cursor = CreateAssignment.find(query);
+//     const result = await cursor.toArray();
+//     res.send(result);
+// })
 
 
     app.post('/assignment',async(req,res) => {
