@@ -1,5 +1,5 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-require('dotenv').config() 
+require('dotenv').config()
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 //online-group-study
 //5kGZE5JJuRrbHeQ5
 app.use(cors({
-  origin : ['http://localhost:5173']
+  origin: ['http://localhost:5173']
 }));
 app.use(express.json());
 
@@ -35,86 +35,106 @@ async function run() {
     const CreateAssignment = client.db('OnlineGroupStudyAssignment').collection('assignment');
     const SubmitAssignment = client.db('OnlineGroupStudyAssignment').collection('submitassignment');
 
-    app.get('/feature',async(req,res) => {
-        const cursor = FeatureCollection.find();
-        const result = await cursor.toArray();
-        res.send(result);
+    app.get('/feature', async (req, res) => {
+      const cursor = FeatureCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
-    app.get('/assignment',async(req,res) => {
-        const cursor = CreateAssignment.find();
-        const result = await cursor.toArray();
-        res.send(result);
+    app.get('/assignment', async (req, res) => {
+      const cursor = CreateAssignment.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
-    app.get('/submitAssignment',async(req,res) => {
-        const cursor = SubmitAssignment.find();
-        const result = await cursor.toArray();
-        res.send(result);
+    app.get('/submitAssignment', async (req, res) => {
+      const cursor = SubmitAssignment.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
-    app.get('/submitAssignment/:id', async(req,res) =>{
+    app.get('/submitAssignment/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       // const cursor = SubmitAssignment.find(query);
       const result = await SubmitAssignment.findOne(query);
       res.send(result);
-  })
-    app.get('/assignmentDetails',async(req,res) => {
-        const cursor = CreateAssignment.find();
-        const result = await cursor.toArray();
-        res.send(result);
+    })
+    app.get('/assignmentDetails', async (req, res) => {
+      const cursor = CreateAssignment.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
 
-    app.get('/updateAssignment/:id', async(req,res) =>{
+    app.get('/updateAssignment/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await CreateAssignment.findOne(query);
       res.send(result);
-  })
+    })
 
-//   app.get('/myassignment/:email', async(req,res) =>{
-//     const email = req.body.email;
-//     const query = {email :  (email)};
-//     const cursor = CreateAssignment.find(query);
-//     const result = await cursor.toArray();
-//     res.send(result);
-// })
+    app.get('/myassignment', async (req, res) => {
+      const cursor = SubmitAssignment.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+    app.get('/myassignment/:email', async (req, res) => {
+      const email = req.body.email;
+      const query = { email: (email) };
+      const cursor = SubmitAssignment.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
 
-    app.post('/assignment',async(req,res) => {
+    app.post('/assignment', async (req, res) => {
       const user = req.body;
       const result = await CreateAssignment.insertOne(user);
       res.send(result);
     })
-    app.post('/submitAssignment',async(req,res) => {
+    app.post('/submitAssignment', async (req, res) => {
       const user = req.body;
       const result = await SubmitAssignment.insertOne(user);
       res.send(result);
     })
 
-    app.put('/updateAssignment/:id', async (req,res) => {
+    app.put('/updateAssignment/:id', async (req, res) => {
       const id = req.params.id;
       const user = req.body;
       // console.log(id,user);
-      const filter = {_id : new ObjectId(id)};
-      const options = {upsert : true};
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
       const updatedSpot = {
-          $set : {
-            imageurl: user.imageurl,
-              title : user.title,
-              mark : user.mark,
-              inputField : user.inputField,
-          }
+        $set: {
+          imageurl: user.imageurl,
+          title: user.title,
+          mark: user.mark,
+          inputField: user.inputField,
+        }
       };
-      const result = await CreateAssignment.updateOne(filter,updatedSpot,options);
+      const result = await CreateAssignment.updateOne(filter, updatedSpot, options);
       res.send(result);
-  })
+    })
+    app.put('/updateMark/:id', async (req, res) => {
+      const id = req.params.id;
+      const user = req.body;
+      // console.log(id,user);
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedSpot = {
+        $set: {
+          num: user.mark,
+          feedback: user.feedback
+        }
+      };
+      const result = await SubmitAssignment.updateOne(filter, updatedSpot, options);
+      res.send(result);
+    })
 
-    app.delete('/deleteassignment/:id', async(req,res) => {
+    app.delete('/deleteassignment/:id', async (req, res) => {
       const id = req.params.id;
       // console.log('delte',id);
-      const query = {_id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await CreateAssignment.deleteOne(query);
       res.send(result);
-  })
+    })
 
 
     // Send a ping to confirm a successful connection
@@ -129,10 +149,10 @@ run().catch(console.dir);
 
 
 
-app.get('/',async(req,res) => {
-    res.send('online study web site is running');
+app.get('/', async (req, res) => {
+  res.send('online study web site is running');
 })
 
-app.listen(port,() =>{
-    console.log(`this server is running : ${port}`)
+app.listen(port, () => {
+  console.log(`this server is running : ${port}`)
 })
