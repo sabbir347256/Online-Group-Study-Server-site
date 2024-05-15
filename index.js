@@ -98,7 +98,7 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
-    app.get('/submitAssignment/:id', async (req, res) => {
+    app.get('/submitAssignment/:id', async (, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       // const cursor = SubmitAssignment.find(query);
